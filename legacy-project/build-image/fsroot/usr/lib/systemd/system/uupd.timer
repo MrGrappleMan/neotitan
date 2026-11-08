@@ -1,0 +1,15 @@
+[Unit]
+Description=🔄️ UUpd, Updates system to get possible latest changes, bug fixes, security patches
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+
+OnBootSec=20min
+# Gives system plenty of time to establish a stable connection
+OnUnitInactiveSec=4h
+# Delay a start 4 hours after the service actually finishes
+# This also staggers updates across devices, preventing servers from being overloaded
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,52 @@
+#!/usr/bin/env fish
+
+# Aliases
+    alias fpk "flatpak --system" # Main alias
+    alias fpkrepo+ "flatpak --system remote-add --if-not-exists" # Repository add
+    alias fpkrepo- "flatpak --system remote-delete --force" # Repository remove
+    alias fpkpkg+ "flatpak --system install -y --noninteractive --or-update" # Package add
+    alias fpkpkg- "flatpak --system uninstall -y --noninteractive" # Package remove
+
+# Add repos
+    fpkrepo+ flathub https://flathub.org/repo/flathub.flatpakrepo
+    fpkrepo+ flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+    fpkrepo+ flatpark https://dl.flatpark.org/flatpark.flatpakrepo
+    fpkrepo+ cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
+    fpkrepo+ gnome-nightly https://nightly.gnome.org/gnome-nightly.flatpakrepo
+    fpkrepo+ igalia https://software.igalia.com/flatpak-refs/igalia.flatpakrepo
+    fpkrepo+ eos-apps https://ostree.endlessm.com/ostree/eos-apps
+    fpkrepo+ eos-sdk https://ostree.endlessm.com/ostree/eos-sdk
+    fpkrepo+ webkit https://software.igalia.com/flatpak-refs/webkit-sdk.flatpakrepo
+    fpkrepo+ webkit-sdk https://software.igalia.com/flatpak-refs/webkit-sdk.flatpakrepo
+    fpkrepo+ fedora oci+https://registry.fedoraproject.org
+    fpkrepo+ fedora-testing oci+https://registry.fedoraproject.org/#testing
+    fpkrepo+ rhel https://flatpaks.redhat.io/rhel.flatpakrepo
+    fpkrepo+ appcenter https://flatpak.elementary.io/repo.flatpakrepo
+    fpkrepo+ pureos https://store.puri.sm/repo/stable/pureos.flatpakrepo
+
+# Remove all user specific flatpak pkgs and repos, system wide installs standardize location, save storage, keep user data seperate
+    flatpak uninstall -u --all -y --noninteractive --force-remove
+    flatpak remote-delete -u flathub
+    flatpak remote-delete -u flathub-beta
+
+# Add pkgs
+    # Never install SDKs and runtimes manually unless you trruly need them
+
+    fpkpkg+ flathub \
+        io.github.flattool.Warehouse com.github.tchx84.Flatseal \
+        com.rafaelmardojai.Blanket \
+        org.gnome.Boxes com.ranfdev.DistroShelf \
+        com.nuclearplayer.Nuclear io.github.ecotubehq.player org.nickvision.tubeconverter \
+        org.onlyoffice.desktopeditors \
+        io.frama.tractor.carburetor io.github.nozwock.Packet org.localsend.localsend_app com.brave.Browser \
+        io.github.qwersyk.Newelle \
+        org.kde.krita org.upscayl.Upscayl \
+        org.telegram.desktop org.equicord.equibop org.gnome.Fractal
+
+# Permission modifications
+    #flatpak override -u --unset-env=ZED_FLATPAK_NO_ESCAPE dev.zed.Zed
+    #export appid=rocks.shy.VacuumTube
+    #mkdir -p ~/.config/lsfg-vk
+    #flatpak override --user --filesystem=/home/$USER/.config/lsfg-vk:rw $appid
+    #flatpak override --user --filesystem=/home/$USER/local/share/Steam/steamapps/common:ro $appid
+    #flatpak override --user --env=LSFGVK_CONFIG=/home/$USER/.config/lsfg-vk/conf.toml $appid

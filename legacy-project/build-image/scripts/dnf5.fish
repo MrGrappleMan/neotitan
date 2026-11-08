@@ -1,0 +1,122 @@
+#!/usr/bin/env fish
+echo "🚩 --- Run 'dnf5.fish' ---"
+
+# Notes:
+    # Prefer updating/syncing system before installing packages.
+    # Sometimes updating/syncing can cause conflicts or missing dependencies.
+    # Specific packages with versions set from upstream base image may become broken.
+    #
+    # ROCm and CUDA work in distrobox
+    # Install your dev files to home folder, distrobox or flatpak.
+    # They will probably work in any case.
+    # Just set it up with care as it is not a traditional system.
+
+# Aliases
+    alias df5pkg- "dnf5 -y remove"
+    alias df5pkg+ "dnf5 -y install --skip-broken --skip-unavailable --allow-downgrade --allowerasing"
+    alias df5repo+ "dnf5 -y config-manager addrepo --overwrite --create-missing-dir"
+
+# If the domain and its repo file is down, probably the package is not available to install as well. Even if you did mention the repo files there manually, it would not be able to retrieve the package itself.
+# Futhermore, if some parameters in the DNF file change, it lets the maintainer of the package do changes from one place, without relying on downstream maintainers. GPG keys change frequently for critical projects.
+
+# Packages Delete
+    echo "⭕ --- (-) Delete packages ---"
+    df5pkg- \
+        moby-engine docker \
+        firefox \
+        code \
+        @gnome-desktop gnome-shell gdm mutter gnome-session gnome-control-center gnome-randr gnome-initial-setup nautilus gnome-terminal gdm \
+        steam \
+        rpm-ostree
+
+# Repos add
+    df5pkg+ fedora-gpg-keys dnf-plugins-core etckeeper-dnf dnf-repo
+    df5repo+ --from-repofile=https://packages.playit.gg/repo-files/playit-fedora.repo
+    df5repo+ --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+    df5repo+ --from-repofile=https://boinc.berkeley.edu/dl/linux/stable/fc44/boinc-stable-fc44.repo
+
+    dnf5 copr enable ryanabx/cosmic-epoch
+    dnf5 copr enable ligenix/cosmic-ext
+    dnf5 copr enable lizardbyte/beta
+    dnf5 copr enable pesader/hblock
+    dnf5 copr enable elxreno/preload
+    dnf5 copr enable pgdev/zed
+
+    df5pkg+ --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
+    df5pkg+ https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+# Updation
+    # Distro sync
+        # Packages versions are set to the version meant for that version of the distro
+        # for coordinated versioning. Also fixes conflicts and missing dependencies
+        #echo "⭕ --- (@) Sync packages"
+        #dnf5 -y distro-sync --skip-unavailable --skip-broken --allowerasing
+    # Update
+        # Packages are bindly updated, but some may break compatibility
+        # with each other and not coordinate. Better for rawhide.
+        #echo "⭕ --- (^) Update packages ---"
+        #dnf5 update -y --skip-unavailable --allow-downgrade --allowerasing
+    # You want a system that works correctly,
+    # and not just higher versions that may not properly coordinate with each other.
+
+# Packages Add
+    echo "⭕ --- (+) Add packages ---"
+    df5pkg+ \
+        cosmic-app-library cosmic-applets cosmic-bg cosmic-comp cosmic-desktop cosmic-greeter cosmic-icon-theme cosmic-idle cosmic-launcher cosmic-notifications \
+        cosmic-osd cosmic-panel cosmic-session cosmic-settings-daemon cosmic-workspaces cutecosmic-qt6 xdg-desktop-portal-cosmic \
+        \
+        cosmic-ext-applet-clipboard-manager cosmic-ext-applet-emoji-selector cosmic-ext-applet-external-monitor-brightness \
+        cosmic-ext-applet-logomenu cosmic-ext-applet-ollama cosmic-ext-applet-places-menu cosmic-ext-applet-sysinfo \
+        cosmic-ext-applet-system-monitor cosmic-ext-applet-tailscale \
+        \
+        cosmic-edit cosmic-ext-calculator cosmic-ext-camera cosmic-ext-disks cosmic-ext-examine cosmic-ext-noctua cosmic-ext-storage cosmic-ext-tasks \
+        cosmic-ext-tweaks cosmic-ext-xcalendar cosmic-files cosmic-monitor cosmic-player cosmic-screenshot cosmic-store cosmic-term cosmic-settings \
+        cosmic-viewer \
+        \
+        greetd greetd-selinux \
+        \
+        xdg-desktop-portal \
+        \
+        flatpak flatseal flatpak-libs flatpak-selinux flatpak-session-helper libportal \
+        uutils-coreutils util-linux \
+        fish zsh \
+        zstd \
+        \
+        hblock tor mosh tailscale openssh rsync rclone playit iwd \
+        cockpit cockpit-system cockpit-machines cockpit-ostree \
+        \
+        clamd \
+        zed \
+        \
+        waydroid waydroid-selinux \
+        cockpit-podman podman podman-docker \
+        distrobox \
+        libvirt libvirt-libs \
+        \
+        amd-gpu-firmware amd-ucode-firmware amdsmi kmod-ryzen-smu ryzenadj \
+        intel-lpmd intel-media-driver intel-mediasdk intel-metee \
+        \
+        libimobiledevice libimobiledevice-utils ifuse usbmuxd
+
+        # kernel-modules-extra
+
+        #amd-gpu-firmware amd-ucode-firmware amdsmi am-utils
+        #nvidia-gpu-firmware libva-nvidia-driver envytools nvidia-patch
+        #host-spawn libei libei-utils
+        #pnpm
+        #qemu-kvm qemu-kvm-core libvirt-daemon-kvm
+        #mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld mesa-vulkan-drivers-freeworld mesa-dri-drivers mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers mesa-libOSMesa mesa-compat-libOSMesa
+    # CONFLICTS ( Format: ChosenPackages | ConflictingPackages (reason) )
+        # NONE | fedora-release-identity-cosmic-atomic fedora-release-cosmic-atomic ( this independent image is NOT cosmic atomic, recognizing it as one will cause conflicts )
+        # NONE | fedora-repos-rawhide ( only use repos in fsroot/usr/share/factory/etc/yum.repos.d or pre-packaged ones )
+        # NONE | cosmic-config-fedora ( We have our own configs )
+        # tuned tuned-ppd | power-profiles-daemon , tlp tlp-pd tlp-rdw , auto-cpufreq ( TuneD better integrated w/ modern standards, drivers, pstate support, less breakage points by low configurability )
+    echo " --- (+) Add packages ---"
+
+# Cleanup
+    echo "⭕ --- (🧹) Clean DNF5 ---"
+    dnf5 autoremove -y # Extra packages
+    dnf5 clean all -y # Cached data
+    echo " --- (🧹) Clean DNF5 ---"
+
+echo " --- Run 'dnf5.fish' ---"

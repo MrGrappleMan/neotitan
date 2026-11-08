@@ -1,0 +1,11 @@
+[Unit]
+Description=hBlock - /etc/hosts based content, ads and tracker blocker
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=10min
+OnUnitInactiveSec=2h
+
+[Install]
+WantedBy=timers.target
