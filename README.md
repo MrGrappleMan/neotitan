@@ -1,18 +1,14 @@
-# Bluefin Dakota
-*Dakotaraptor steini*
+# Neotitan
 
-[Bluefin](https://projectbluefin.io) built on [GNOME OS](https://os.gnome.org/), assembled entirely from source.
+A modern, legacy-free bootc desktop OS built with BuildStream 2, featuring the **COSMIC** desktop environment and **nmbl** (No More Boot Loader) direct UKI booting.
 
-<a href="https://docs.projectbluefin.io/changelogs">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://docs.projectbluefin.io/img/cards/dakota-dark.png">
-    <img src="https://docs.projectbluefin.io/img/cards/dakota-light.png" alt="Bluefin Dakota" width="800">
-  </picture>
-</a>
+## Key Features
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/projectbluefin/dakota)
+- **Desktop Environment:** COSMIC Desktop Environment (System76) driven by `greetd` + `cosmic-greeter`.
+- **Bootloader Architecture:** `nmbl` (No More Boot Loader) direct booting via Unified Kernel Images (UKIs) without GRUB or systemd-boot.
+- **Image Architecture:** Bootable OCI image (`bootc`) assembled hermetically from source with BuildStream 2.
+- **Workstation Tuning:** Low-latency kernel scheduler kargs (`preempt=lazy`, `threadirqs`), ZSwap memory caching with zstd compression, and TCP BBR congestion control.
 
-**Alpha** — [filing issues](https://github.com/projectbluefin/dakota/issues) is the whole point.
 
 ## Built-in feedback loop
 
